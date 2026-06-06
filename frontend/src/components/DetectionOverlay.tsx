@@ -8,10 +8,23 @@ type Props = {
   detections: Detection[]
 }
 
+interface LabelRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+function rectIntersect(a: LabelRect, b: LabelRect): boolean {
+  return !(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y)
+}
+
 export default function DetectionOverlay({ imageUrl, width, height, detections }: Props) {
-  const fontSize = Math.max(height * 0.025, 14)
-  const padding = 4
+  const fontSize = Math.max(height * 0.0175, 10)
+  const padding = 3
   const labelHeight = fontSize + padding * 2
+
+  const placedLabels: LabelRect[] = []
 
   return (
     <div className="detection-container">
@@ -26,7 +39,22 @@ export default function DetectionOverlay({ imageUrl, width, height, detections }
           const color = getClassColor(det.class)
           const label = `${det.class} ${(det.confidence * 100).toFixed(0)}%`
           const labelWidth = label.length * fontSize * 0.6 + padding * 2
-          const labelTop = y1 >= labelHeight ? y1 - labelHeight : y1
+
+          // Default: label sits above box with bottom edge at bbox top.
+          // Fallback: render inside when bbox top is too close to the image edge.
+          const preferAbove = y1 >= labelHeight + 4
+          let candidate: LabelRect = {
+            x: x1,
+            y: preferAbove ? y1 - labelHeight : y1,
+            width: labelWidth,
+            height: labelHeight,
+          }
+
+          // Nudge down until the label clears all previously placed labels.
+          while (placedLabels.some(placed => rectIntersect(candidate, placed))) {
+            candidate = { ...candidate, y: candidate.y + labelHeight + 2 }
+          }
+          placedLabels.push(candidate)
 
           return (
             <g key={i}>
@@ -40,15 +68,15 @@ export default function DetectionOverlay({ imageUrl, width, height, detections }
                 fill="none"
               />
               <rect
-                x={x1}
-                y={labelTop}
-                width={labelWidth}
-                height={labelHeight}
+                x={candidate.x}
+                y={candidate.y}
+                width={candidate.width}
+                height={candidate.height}
                 fill={color}
               />
               <text
-                x={x1 + padding}
-                y={labelTop + fontSize + padding}
+                x={candidate.x + padding}
+                y={candidate.y + fontSize + padding}
                 fill="white"
                 fontSize={fontSize}
                 fontFamily="sans-serif"
