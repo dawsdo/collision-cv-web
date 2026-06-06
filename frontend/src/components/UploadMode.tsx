@@ -4,6 +4,7 @@ import { uploadFile } from '../api/upload'
 import type { UploadResponse } from '../types/detections'
 import DetectionOverlay from './DetectionOverlay'
 import DetectionLegend from './DetectionLegend'
+import VideoOverlay from './VideoOverlay'
 
 type UploadState =
   | { phase: 'idle' }
@@ -113,17 +114,27 @@ export default function UploadMode() {
       )
     }
 
-    return (
-      <div className="upload-mode">
-        <div className="upload-zone upload-zone--complete">
-          <p className="upload-zone__result-title">{summary}</p>
-          <pre className="upload-zone__json">{JSON.stringify(result, null, 2)}</pre>
-          <button className="upload-btn" onClick={reset}>
-            Upload another
-          </button>
+    if (result.type === 'video' && imageUrl) {
+      const allDetections = result.frames.flatMap(f => f.detections)
+      return (
+        <div className="upload-mode">
+          <div className="upload-result">
+            <p className="upload-zone__result-title">{summary}</p>
+            <VideoOverlay
+              videoUrl={imageUrl}
+              width={result.width}
+              height={result.height}
+              frames={result.frames}
+              duration={result.duration}
+            />
+            <DetectionLegend detections={allDetections} />
+            <button className="upload-btn" onClick={reset}>
+              Upload another
+            </button>
+          </div>
         </div>
-      </div>
-    )
+      )
+    }
   }
 
   const isError = state.phase === 'error'
