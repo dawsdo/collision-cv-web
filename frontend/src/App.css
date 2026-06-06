@@ -1,50 +1,211 @@
-.page {
+/* ─── App layout ────────────────────────────────────────────────── */
+
+.app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-h1 {
-  font-size: 2rem;
-  font-weight: 700;
+.app-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 0 16px;
+  border-bottom: 1px solid #2a2a2c;
+}
+
+.app-header__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.app-title {
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #f0f0f0;
 }
 
-.subtitle {
-  font-size: 1rem;
-  color: #999;
+.app-subtitle {
+  font-size: 0.8rem;
+  color: #666;
 }
 
-.status {
+.app-content {
+  flex: 1;
+  padding: 32px 0;
+}
+
+/* ─── BackendStatus ─────────────────────────────────────────────── */
+
+.backend-status {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: 0.9rem;
+  gap: 6px;
+  padding-top: 4px;
+  font-size: 0.75rem;
+  color: #666;
 }
 
-.dot {
-  width: 10px;
-  height: 10px;
+.backend-status__dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
+  background: #444;
 }
 
-.status--connected .dot {
-  background: #22c55e;
+.backend-status--connected .backend-status__dot { background: #22c55e; }
+.backend-status--unreachable .backend-status__dot { background: #ef4444; }
+
+.backend-status--connected .backend-status__label { color: #22c55e; }
+.backend-status--unreachable .backend-status__label { color: #ef4444; }
+
+/* ─── Tabs ──────────────────────────────────────────────────────── */
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #2a2a2c;
 }
 
-.status--unreachable .dot {
-  background: #ef4444;
+.tabs__tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  margin-bottom: -1px;
+  font-size: 0.875rem;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.1s;
 }
 
-.status--connected {
-  color: #22c55e;
+.tabs__tab:hover {
+  color: #f0f0f0;
 }
 
-.status--unreachable {
+.tabs__tab--active {
+  color: #f0f0f0;
+  font-weight: 600;
+  border-bottom-color: #5e6ad2;
+}
+
+/* ─── UploadMode ────────────────────────────────────────────────── */
+
+.upload-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload-zone {
+  border: 1px dashed #3a3a3c;
+  border-radius: 8px;
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.upload-zone--drag-over {
+  border-color: #5e6ad2;
+  background: rgba(94, 106, 210, 0.06);
+}
+
+.upload-zone--error {
+  border-color: #ef4444;
+}
+
+.upload-zone--processing,
+.upload-zone--complete {
+  cursor: default;
+}
+
+.upload-zone__input {
+  display: none;
+}
+
+.upload-zone__title {
+  font-size: 0.9rem;
+  color: #f0f0f0;
+  margin-bottom: 8px;
+}
+
+.upload-zone__subtitle {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.upload-zone__error {
+  font-size: 0.875rem;
   color: #ef4444;
+}
+
+.upload-zone__filename {
+  font-size: 0.875rem;
+  color: #f0f0f0;
+  margin-bottom: 8px;
+}
+
+.upload-zone__processing {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.upload-zone__result-title {
+  font-size: 0.9rem;
+  color: #f0f0f0;
+  margin-bottom: 16px;
+}
+
+.upload-zone__json {
+  text-align: left;
+  background: #111113;
+  border: 1px solid #2a2a2c;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 0.75rem;
+  color: #ccc;
+  overflow: auto;
+  max-height: 300px;
+  margin-bottom: 16px;
+  white-space: pre;
+}
+
+.upload-btn {
+  background: none;
+  border: 1px solid #2a2a2c;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  color: #f0f0f0;
+  cursor: pointer;
+  transition: border-color 0.1s;
+}
+
+.upload-btn:hover {
+  border-color: #5e6ad2;
+}
+
+/* ─── LiveMode ──────────────────────────────────────────────────── */
+
+.live-mode {
+  border: 1px dashed #3a3a3c;
+  border-radius: 8px;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.live-mode__title {
+  font-size: 0.9rem;
+  color: #f0f0f0;
+  margin-bottom: 8px;
+}
+
+.live-mode__subtitle {
+  font-size: 0.75rem;
+  color: #666;
 }

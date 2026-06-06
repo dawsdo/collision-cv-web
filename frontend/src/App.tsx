@@ -1,39 +1,33 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './App.css'
+import BackendStatus from './components/BackendStatus'
+import Tabs from './components/Tabs'
+import UploadMode from './components/UploadMode'
+import LiveMode from './components/LiveMode'
 
-type BackendStatus = 'checking' | 'connected' | 'unreachable'
+type Mode = 'upload' | 'live'
 
-function App() {
-  const [status, setStatus] = useState<BackendStatus>('checking')
+const TABS: { id: Mode; label: string }[] = [
+  { id: 'upload', label: 'Upload' },
+  { id: 'live', label: 'Live' },
+]
 
-  useEffect(() => {
-    const check = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/health')
-        setStatus(res.ok ? 'connected' : 'unreachable')
-      } catch {
-        setStatus('unreachable')
-      }
-    }
-    check()
-  }, [])
-
-  const statusLabel: Record<BackendStatus, string> = {
-    checking: 'Checking backend...',
-    connected: 'Backend connected',
-    unreachable: 'Backend unreachable',
-  }
+export default function App() {
+  const [mode, setMode] = useState<Mode>('upload')
 
   return (
-    <main className="page">
-      <h1>Collision CV Web</h1>
-      <p className="subtitle">Computer vision for collision scene analysis</p>
-      <div className={`status status--${status}`}>
-        {status !== 'checking' && <span className="dot" />}
-        {statusLabel[status]}
-      </div>
-    </main>
+    <div className="app">
+      <header className="app-header">
+        <div className="app-header__left">
+          <h1 className="app-title">Collision CV Web</h1>
+          <p className="app-subtitle">Computer vision for collision scene analysis</p>
+        </div>
+        <BackendStatus />
+      </header>
+      <Tabs tabs={TABS} active={mode} onChange={setMode} />
+      <main className="app-content">
+        {mode === 'upload' ? <UploadMode /> : <LiveMode />}
+      </main>
+    </div>
   )
 }
-
-export default App
