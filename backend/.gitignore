@@ -1,4 +1,4 @@
-# Python bytecode
+	# Python bytecode
 __pycache__/
 *.pyc
 *.pyo
@@ -24,6 +24,12 @@ test_image.jpg
 test.txt
 *.test.jpg
 *.test.png
+
+# Test artifacts (videos)
+test_video.mp4
+test_*.mp4
+test_*.mov
+test_*.webm
 
 # Model weights (auto-downloaded by ultralytics)
 *.pt
