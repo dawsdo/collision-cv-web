@@ -2,6 +2,8 @@ import { useState, useRef } from 'react'
 import type { DragEvent, ChangeEvent } from 'react'
 import { uploadFile } from '../api/upload'
 import type { UploadResponse } from '../types/detections'
+import DetectionOverlay from './DetectionOverlay'
+import DetectionLegend from './DetectionLegend'
 
 type UploadState =
   | { phase: 'idle' }
@@ -23,19 +25,28 @@ function detectionCount(result: UploadResponse): number {
 export default function UploadMode() {
   const [state, setState] = useState<UploadState>({ phase: 'idle' })
   const [dragOver, setDragOver] = useState(false)
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleFile = async (file: File) => {
+    setImageUrl(prev => { if (prev) URL.revokeObjectURL(prev); return null })
+
     if (!ALLOWED_EXTS.includes(getExt(file.name))) {
       if (inputRef.current) inputRef.current.value = ''
       setState({ phase: 'error', message: 'Unsupported file type' })
       return
     }
+
+    const url = URL.createObjectURL(file)
+    setImageUrl(url)
     setState({ phase: 'uploading', filename: file.name })
+
     try {
       const result = await uploadFile(file)
       setState({ phase: 'complete', filename: file.name, result })
     } catch (err) {
+      URL.revokeObjectURL(url)
+      setImageUrl(null)
       setState({ phase: 'error', message: err instanceof Error ? err.message : 'Upload failed' })
     }
   }
@@ -58,6 +69,7 @@ export default function UploadMode() {
   }
 
   const reset = () => {
+    setImageUrl(prev => { if (prev) URL.revokeObjectURL(prev); return null })
     setState({ phase: 'idle' })
     if (inputRef.current) inputRef.current.value = ''
   }
@@ -81,6 +93,26 @@ export default function UploadMode() {
         ? `${count} detection${count !== 1 ? 's' : ''} found`
         : `${result.frames.length} frame${result.frames.length !== 1 ? 's' : ''} analyzed, ${count} total detection${count !== 1 ? 's' : ''}`
 
+    if (result.type === 'image' && imageUrl) {
+      return (
+        <div className="upload-mode">
+          <div className="upload-result">
+            <p className="upload-zone__result-title">{summary}</p>
+            <DetectionOverlay
+              imageUrl={imageUrl}
+              width={result.width}
+              height={result.height}
+              detections={result.detections}
+            />
+            <DetectionLegend detections={result.detections} />
+            <button className="upload-btn" onClick={reset}>
+              Upload another
+            </button>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="upload-mode">
         <div className="upload-zone upload-zone--complete">
@@ -94,7 +126,6 @@ export default function UploadMode() {
     )
   }
 
-  // idle or error
   const isError = state.phase === 'error'
 
   return (

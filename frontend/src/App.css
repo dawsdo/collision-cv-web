@@ -190,6 +190,50 @@
   border-color: #5e6ad2;
 }
 
+/* ─── DetectionOverlay + Legend ────────────────────────────────── */
+
+.detection-container {
+  position: relative;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto 16px;
+}
+
+.detection-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px;
+  font-size: 0.8rem;
+  color: #999;
+  margin-bottom: 16px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── Upload result (image complete state) ──────────────────────── */
+
+.upload-result {
+  text-align: center;
+  padding: 24px 0 8px;
+}
+
+.upload-result .upload-zone__result-title {
+  margin-bottom: 16px;
+}
+
 /* ─── LiveMode ──────────────────────────────────────────────────── */
 
 .live-mode {
