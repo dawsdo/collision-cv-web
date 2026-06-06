@@ -18,3 +18,14 @@ env/
 
 # Package metadata
 *.egg-info/
+
+# Test artifacts
+test_image.jpg
+test.txt
+*.test.jpg
+*.test.png
+
+# Model weights (auto-downloaded by ultralytics)
+*.pt
+*.onnx
+*.engine
