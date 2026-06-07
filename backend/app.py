@@ -7,7 +7,7 @@ from routes.stream import register_stream_handlers
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"])
-socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
+socketio = SocketIO(app, cors_allowed_origins=["http://localhost:5173", "http://localhost:5000"])
 
 app.register_blueprint(upload_bp)
 register_stream_handlers(socketio)
