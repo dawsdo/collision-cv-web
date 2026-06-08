@@ -19,7 +19,7 @@ export default function DetectionLegend({ detections }: Props) {
       {classes.map(([cls, count]) => (
         <div key={cls} className="legend-item">
           <div className="legend-swatch" style={{ background: getClassColor(cls) }} />
-          <span>{cls} ({count})</span>
+          <span>{cls} <span className="legend-count">({count})</span></span>
         </div>
       ))}
     </div>

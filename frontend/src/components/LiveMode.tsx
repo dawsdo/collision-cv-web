@@ -171,15 +171,15 @@ export default function LiveMode() {
       <div className="live-stats">
         <span className="live-stat">
           <span
-            className="live-stat__dot"
+            className={`live-stat__dot${connected ? ' live-stat__dot--connected' : ''}`}
             style={{ background: connected ? '#22c55e' : '#f59e0b' }}
           />
           {connected ? 'Connected' : 'Connecting...'}
         </span>
-        <span className="live-stat">Capture: {captureFPS} fps</span>
-        <span className="live-stat">Detection: {detectionFPS} fps</span>
-        {latencyMs != null && <span className="live-stat">Latency: {latencyMs}ms</span>}
-        <span className="live-stat">Dropped: {droppedFrames}</span>
+        <span className="live-stat">Capture: <span className="live-stat__val">{captureFPS}</span> fps</span>
+        <span className="live-stat">Detection: <span className="live-stat__val">{detectionFPS}</span> fps</span>
+        {latencyMs != null && <span className="live-stat">Latency: <span className="live-stat__val">{latencyMs}ms</span></span>}
+        <span className="live-stat">Dropped: <span className="live-stat__val">{droppedFrames}</span></span>
         <button className="live-btn live-btn--secondary live-btn--sm" onClick={handleStop}>
           Stop
         </button>

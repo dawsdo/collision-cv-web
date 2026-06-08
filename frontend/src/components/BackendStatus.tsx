@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react'
 type Status = 'checking' | 'connected' | 'unreachable'
 
 const LABELS: Record<Status, string> = {
-  checking: 'Checking...',
-  connected: 'Backend ok',
-  unreachable: 'Backend unreachable',
+  checking: 'checking...',
+  connected: 'online',
+  unreachable: 'offline',
 }
 
 export default function BackendStatus() {

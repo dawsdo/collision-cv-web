@@ -53,7 +53,7 @@ export default function BoundingBoxLayer({ detections, imageHeight }: Props) {
               y={candidate.y + fontSize + padding}
               fill="white"
               fontSize={fontSize}
-              fontFamily="sans-serif"
+              fontFamily="'JetBrains Mono', 'SF Mono', monospace"
               fontWeight="600"
             >
               {label}
