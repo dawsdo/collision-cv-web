@@ -24,9 +24,9 @@ export class LiveStreamController {
 
   connect(): void {
     this.socket = io(this.serverUrl, {
-      forceNew: true,
-      transports: ['websocket'],
-    })
+    forceNew: true,
+    transports: ['polling', 'websocket'],
+    })  
     this.socket.on('connect', () => this.callbacks.onConnect())
     this.socket.on('disconnect', () => this.callbacks.onDisconnect())
     this.socket.on('connect_error', (err: Error) => this.callbacks.onError(err.message))

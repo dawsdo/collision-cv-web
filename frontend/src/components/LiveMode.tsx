@@ -27,13 +27,24 @@ export default function LiveMode() {
   const [latestDetection, setLatestDetection] = useState<DetectionResult | null>(null)
   const [detectionFPS, setDetectionFPS] = useState(0)
   const [latencyMs, setLatencyMs] = useState<number | null>(null)
+  const [droppedFrames, setDroppedFrames] = useState(0)
 
   const controllerRef = useRef<LiveStreamController | null>(null)
   const frameTimestampsRef = useRef<Map<number, number>>(new Map())
   const detectionCountRef = useRef(0)
   const detectionFpsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Backpressure: frame_id currently awaiting a detection response, or null when idle.
+  const inFlightFrameIdRef = useRef<number | null>(null)
+  const droppedCountRef = useRef(0)
 
   const handleFrame = useCallback((blob: Blob, frameId: number) => {
+    // Skip-if-busy: while a frame is in flight, drop newly captured frames
+    // instead of queueing them. Keeps end-to-end latency bounded by one frame.
+    if (inFlightFrameIdRef.current !== null) {
+      droppedCountRef.current++
+      return
+    }
+    inFlightFrameIdRef.current = frameId
     frameTimestampsRef.current.set(frameId, performance.now())
     void controllerRef.current?.sendFrame(blob, frameId)
   }, [])
@@ -55,10 +66,13 @@ export default function LiveMode() {
     }
     frameTimestampsRef.current.clear()
     detectionCountRef.current = 0
+    inFlightFrameIdRef.current = null
+    droppedCountRef.current = 0
     setConnected(false)
     setLatestDetection(null)
     setDetectionFPS(0)
     setLatencyMs(null)
+    setDroppedFrames(0)
   }, [])
 
   // Propagate camera errors from the hook
@@ -86,6 +100,8 @@ export default function LiveMode() {
       onDisconnect: () => setConnected(false),
       onDetections: data => {
         detectionCountRef.current++
+        // Response arrived: pipeline is idle again, so the next captured frame can be sent.
+        inFlightFrameIdRef.current = null
         const sentAt = frameTimestampsRef.current.get(data.frame_id)
         if (sentAt != null) {
           setLatencyMs(Math.round(performance.now() - sentAt))
@@ -94,6 +110,8 @@ export default function LiveMode() {
         setLatestDetection(data)
       },
       onError: err => {
+        // Clear in-flight state so a detection error doesn't permanently jam the pipeline.
+        inFlightFrameIdRef.current = null
         setErrorMsg(err)
         setLiveState('error')
         stopEverything()
@@ -105,6 +123,7 @@ export default function LiveMode() {
     detectionFpsIntervalRef.current = setInterval(() => {
       setDetectionFPS(detectionCountRef.current)
       detectionCountRef.current = 0
+      setDroppedFrames(droppedCountRef.current)
     }, 1000)
   }
 
@@ -160,6 +179,7 @@ export default function LiveMode() {
         <span className="live-stat">Capture: {captureFPS} fps</span>
         <span className="live-stat">Detection: {detectionFPS} fps</span>
         {latencyMs != null && <span className="live-stat">Latency: {latencyMs}ms</span>}
+        <span className="live-stat">Dropped: {droppedFrames}</span>
         <button className="live-btn live-btn--secondary live-btn--sm" onClick={handleStop}>
           Stop
         </button>
