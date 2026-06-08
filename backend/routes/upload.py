@@ -51,7 +51,7 @@ def upload():
             cap.release()
             return jsonify({"error": f"Video exceeds {MAX_VIDEO_SECONDS}s limit ({duration:.1f}s)"}), 400
 
-        frame_interval = int(fps)  # sample 1 frame per second
+        frame_interval = max(1, int(fps / 3))  # sample 3 frames per second
         frames = []
         frame_idx = 0
 

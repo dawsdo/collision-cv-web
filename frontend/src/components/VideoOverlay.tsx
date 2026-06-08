@@ -113,7 +113,7 @@ export default function VideoOverlay({ videoUrl, width, height, frames, duration
           viewBox={`0 0 ${width} ${height}`}
           xmlns="http://www.w3.org/2000/svg"
         >
-          <BoundingBoxLayer detections={currentFrame?.detections ?? []} imageHeight={height} />
+          <BoundingBoxLayer detections={currentFrame?.detections ?? []} imageHeight={height} animate={false} />
         </svg>
       </div>
       <div className="playback-bar">
@@ -134,7 +134,9 @@ export default function VideoOverlay({ videoUrl, width, height, frames, duration
           )}
         </button>
         <span className="time-display">
-          {formatTime(currentTime)} / {formatTime(duration)}
+          <span className="time-current">{formatTime(currentTime)}</span>
+          {' / '}
+          {formatTime(duration)}
         </span>
         <div
           ref={scrubberRef}

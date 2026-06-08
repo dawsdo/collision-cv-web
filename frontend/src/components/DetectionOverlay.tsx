@@ -17,7 +17,7 @@ export default function DetectionOverlay({ imageUrl, width, height, detections }
         viewBox={`0 0 ${width} ${height}`}
         xmlns="http://www.w3.org/2000/svg"
       >
-        <BoundingBoxLayer detections={detections} imageHeight={height} />
+        <BoundingBoxLayer detections={detections} imageHeight={height} animate={false} />
       </svg>
     </div>
   )

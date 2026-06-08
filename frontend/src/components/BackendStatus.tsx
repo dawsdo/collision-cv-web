@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 
 type Status = 'checking' | 'connected' | 'unreachable'
 
 const LABELS: Record<Status, string> = {
-  checking: 'checking...',
-  connected: 'online',
+  checking:    'checking...',
+  connected:   'online',
   unreachable: 'offline',
 }
 
@@ -25,7 +26,21 @@ export default function BackendStatus() {
 
   return (
     <div className={`backend-status backend-status--${status}`}>
-      <span className="backend-status__dot" />
+      {status === 'connected' ? (
+        <motion.span
+          className="backend-status__dot"
+          animate={{
+            boxShadow: [
+              '0 0 0 0 rgba(74,222,128,0)',
+              '0 0 0 6px rgba(74,222,128,0.2)',
+              '0 0 0 12px rgba(74,222,128,0)',
+            ],
+          }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+        />
+      ) : (
+        <span className="backend-status__dot" />
+      )}
       <span className="backend-status__label">{LABELS[status]}</span>
     </div>
   )

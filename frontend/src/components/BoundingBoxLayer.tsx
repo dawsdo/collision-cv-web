@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import type { Detection } from '../types/detections'
 import { getClassColor } from '../lib/classColors'
 
@@ -15,9 +16,10 @@ function rectIntersect(a: LabelRect, b: LabelRect): boolean {
 interface Props {
   detections: Detection[]
   imageHeight: number
+  animate?: boolean
 }
 
-export default function BoundingBoxLayer({ detections, imageHeight }: Props) {
+export default function BoundingBoxLayer({ detections, imageHeight, animate = false }: Props) {
   const fontSize = Math.max(imageHeight * 0.0175, 10)
   const padding = 3
   const labelHeight = fontSize + padding * 2
@@ -44,8 +46,8 @@ export default function BoundingBoxLayer({ detections, imageHeight }: Props) {
         }
         placedLabels.push(candidate)
 
-        return (
-          <g key={i}>
+        const inner = (
+          <>
             <rect x={x1} y={y1} width={x2 - x1} height={y2 - y1} stroke={color} strokeWidth={3} fill="none" />
             <rect x={candidate.x} y={candidate.y} width={candidate.width} height={candidate.height} fill={color} />
             <text
@@ -54,11 +56,25 @@ export default function BoundingBoxLayer({ detections, imageHeight }: Props) {
               fill="white"
               fontSize={fontSize}
               fontFamily="'JetBrains Mono', 'SF Mono', monospace"
-              fontWeight="600"
+              fontWeight="500"
             >
               {label}
             </text>
-          </g>
+          </>
+        )
+
+        return animate ? (
+          <motion.g
+            key={i}
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.03, duration: 0.2, ease: 'easeOut' }}
+          >
+            {inner}
+          </motion.g>
+        ) : (
+          <g key={i}>{inner}</g>
         )
       })}
     </>

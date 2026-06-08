@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import type { DragEvent, ChangeEvent } from 'react'
+import { motion } from 'framer-motion'
 import { uploadFile } from '../api/upload'
 import type { UploadResponse } from '../types/detections'
 import DetectionOverlay from './DetectionOverlay'
@@ -52,14 +53,14 @@ export default function UploadMode() {
     }
   }
 
-  const onDrop = (e: DragEvent<HTMLDivElement>) => {
+  const onDrop = (e: DragEvent<HTMLElement>) => {
     e.preventDefault()
     setDragOver(false)
     const file = e.dataTransfer.files[0]
     if (file) handleFile(file)
   }
 
-  const onDragOver = (e: DragEvent<HTMLDivElement>) => {
+  const onDragOver = (e: DragEvent<HTMLElement>) => {
     e.preventDefault()
     setDragOver(true)
   }
@@ -80,7 +81,17 @@ export default function UploadMode() {
       <div className="upload-mode">
         <div className="upload-zone upload-zone--processing">
           <p className="upload-zone__filename">{state.filename}</p>
-          <p className="upload-zone__processing">Processing...</p>
+          <div className="upload-zone__processing">
+            Processing
+            {[0, 1, 2].map(i => (
+              <motion.span
+                key={i}
+                className="processing-dot"
+                animate={{ opacity: [0.2, 1, 0.2] }}
+                transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -141,7 +152,7 @@ export default function UploadMode() {
 
   return (
     <div className="upload-mode">
-      <div
+      <motion.div
         className={[
           'upload-zone',
           dragOver ? 'upload-zone--drag-over' : '',
@@ -149,6 +160,8 @@ export default function UploadMode() {
         ]
           .filter(Boolean)
           .join(' ')}
+        animate={{ scale: dragOver ? 1.005 : 1 }}
+        transition={{ duration: 0.15, ease: 'easeOut' }}
         onClick={() => inputRef.current?.click()}
         onDrop={onDrop}
         onDragOver={onDragOver}
@@ -166,14 +179,14 @@ export default function UploadMode() {
         ) : (
           <>
             <p className="upload-zone__title">
-              Drag an image or video here, or click to browse
+              Drag an image or video to analyze
             </p>
             <p className="upload-zone__subtitle">
-              Supports JPG, PNG, MP4, MOV, WebM (videos up to 60s)
+              JPG, PNG, MP4, MOV, WebM · up to 60s
             </p>
           </>
         )}
-      </div>
+      </motion.div>
     </div>
   )
 }

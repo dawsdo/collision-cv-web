@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import BoundingBoxLayer from './BoundingBoxLayer'
 import { LiveStreamController } from '../lib/liveStream'
 import { useFrameCapture } from '../hooks/useFrameCapture'
@@ -135,14 +136,19 @@ export default function LiveMode() {
   if (liveState === 'idle') {
     return (
       <div className="live-mode-card">
-        <p className="live-mode-card__title">Live Mode</p>
+        <p className="live-mode-card__title">Live Detection</p>
         <p className="live-mode-card__desc">
-          Real-time vehicle and pedestrian detection from your webcam.
+          Real-time webcam analysis · YOLOv8 inference · 10 FPS capture
         </p>
-        <p className="live-mode-card__sub">Click Start to grant camera access.</p>
-        <button className="live-btn live-btn--primary" onClick={handleStart}>
-          Start
-        </button>
+        <motion.button
+          className="live-btn live-btn--primary"
+          onClick={handleStart}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.1 }}
+        >
+          Begin
+        </motion.button>
       </div>
     )
   }
@@ -150,7 +156,7 @@ export default function LiveMode() {
   if (liveState === 'error') {
     return (
       <div className="live-mode-card live-mode-card--error">
-        <p className="live-mode-card__title">Live Mode</p>
+        <p className="live-mode-card__title">Live Detection</p>
         <p className="live-mode-card__error">{errorMsg ?? 'An unknown error occurred.'}</p>
         <button
           className="live-btn live-btn--secondary"
@@ -169,19 +175,44 @@ export default function LiveMode() {
   return (
     <div className="live-mode-active">
       <div className="live-stats">
-        <span className="live-stat">
-          <span
-            className={`live-stat__dot${connected ? ' live-stat__dot--connected' : ''}`}
-            style={{ background: connected ? '#22c55e' : '#f59e0b' }}
-          />
-          {connected ? 'Connected' : 'Connecting...'}
-        </span>
-        <span className="live-stat">Capture: <span className="live-stat__val">{captureFPS}</span> fps</span>
-        <span className="live-stat">Detection: <span className="live-stat__val">{detectionFPS}</span> fps</span>
-        {latencyMs != null && <span className="live-stat">Latency: <span className="live-stat__val">{latencyMs}ms</span></span>}
-        <span className="live-stat">Dropped: <span className="live-stat__val">{droppedFrames}</span></span>
-        <button className="live-btn live-btn--secondary live-btn--sm" onClick={handleStop}>
-          Stop
+        <div className="live-stat">
+          <span className="live-stat__label">Status</span>
+          <span className="live-stat__val">
+            <motion.span
+              className="live-stat__dot"
+              style={{ background: connected ? '#4ade80' : '#f59e0b' }}
+              animate={connected ? {
+                boxShadow: [
+                  '0 0 0 0 rgba(74,222,128,0)',
+                  '0 0 0 6px rgba(74,222,128,0.2)',
+                  '0 0 0 12px rgba(74,222,128,0)',
+                ],
+              } : {}}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+            />
+            {connected ? 'Online' : 'Connecting'}
+          </span>
+        </div>
+        <div className="live-stat">
+          <span className="live-stat__label">Capture</span>
+          <span className="live-stat__val">{captureFPS} fps</span>
+        </div>
+        <div className="live-stat">
+          <span className="live-stat__label">Detection</span>
+          <span className="live-stat__val">{detectionFPS} fps</span>
+        </div>
+        {latencyMs != null && (
+          <div className="live-stat">
+            <span className="live-stat__label">Latency</span>
+            <span className="live-stat__val">{latencyMs}ms</span>
+          </div>
+        )}
+        <div className="live-stat">
+          <span className="live-stat__label">Dropped</span>
+          <span className="live-stat__val">{droppedFrames}</span>
+        </div>
+        <button className="live-stats__end" onClick={handleStop}>
+          End session
         </button>
       </div>
 
@@ -197,6 +228,7 @@ export default function LiveMode() {
             <BoundingBoxLayer
               detections={latestDetection.detections}
               imageHeight={latestDetection.height}
+              animate={false}
             />
           </svg>
         )}
