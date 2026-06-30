@@ -30,7 +30,8 @@ export default function BoundingBoxLayer({ detections, imageHeight, animate = fa
       {detections.map((det, i) => {
         const [x1, y1, x2, y2] = det.bbox
         const color = getClassColor(det.class)
-        const label = `${det.class} ${(det.confidence * 100).toFixed(0)}%`
+        const idPrefix = det.id != null ? `#${det.id} ` : ''
+        const label = `${idPrefix}${det.class} ${(det.confidence * 100).toFixed(0)}%`
         const labelWidth = label.length * fontSize * 0.6 + padding * 2
 
         const preferAbove = y1 >= labelHeight + 4

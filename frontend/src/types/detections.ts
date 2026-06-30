@@ -2,6 +2,7 @@ export type Detection = {
   class: string
   confidence: number
   bbox: [number, number, number, number]
+  id?: number
 }
 
 export type VideoFrame = {

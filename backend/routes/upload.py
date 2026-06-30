@@ -6,6 +6,7 @@ import cv2
 from flask import Blueprint, jsonify, request
 
 from ml.detector import get_detector
+from ml.tracker import IoUTracker
 
 upload_bp = Blueprint("upload", __name__)
 
@@ -52,6 +53,7 @@ def upload():
             return jsonify({"error": f"Video exceeds {MAX_VIDEO_SECONDS}s limit ({duration:.1f}s)"}), 400
 
         frame_interval = max(1, int(fps / 3))  # sample 3 frames per second
+        tracker = IoUTracker()
         frames = []
         frame_idx = 0
 
@@ -62,7 +64,8 @@ def upload():
             if frame_idx % frame_interval == 0:
                 timestamp = frame_idx / fps
                 detections = detector.detect(frame)
-                frames.append({"timestamp": round(timestamp, 3), "detections": detections})
+                tracked = tracker.update(detections)
+                frames.append({"timestamp": round(timestamp, 3), "detections": tracked})
             frame_idx += 1
 
         cap.release()
