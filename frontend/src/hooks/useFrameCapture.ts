@@ -8,7 +8,7 @@ interface UseFrameCaptureOptions {
 }
 
 interface UseFrameCaptureResult {
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   isReady: boolean
   error: string | null
   captureFPS: number

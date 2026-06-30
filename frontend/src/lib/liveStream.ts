@@ -16,11 +16,13 @@ interface LiveStreamCallbacks {
 
 export class LiveStreamController {
   private socket: Socket | null = null
+  private readonly serverUrl: string
+  private readonly callbacks: LiveStreamCallbacks
 
-  constructor(
-    private readonly serverUrl: string,
-    private readonly callbacks: LiveStreamCallbacks,
-  ) {}
+  constructor(serverUrl: string, callbacks: LiveStreamCallbacks) {
+    this.serverUrl = serverUrl
+    this.callbacks = callbacks
+  }
 
   connect(): void {
     this.socket = io(this.serverUrl, {
