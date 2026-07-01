@@ -5,9 +5,18 @@ export type Detection = {
   id?: number
 }
 
+export type ProximityPair = {
+  id_a: number
+  id_b: number
+  center_distance: number
+  box_gap: number
+  is_close: boolean
+}
+
 export type VideoFrame = {
   timestamp: number
   detections: Detection[]
+  proximity: ProximityPair[]
 }
 
 export type ImageResponse = {

@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useMemo } from 'react'
 import type { VideoFrame } from '../types/detections'
 import BoundingBoxLayer from './BoundingBoxLayer'
+import ProximityLayer from './ProximityLayer'
 
 interface Props {
   videoUrl: string
@@ -113,6 +114,7 @@ export default function VideoOverlay({ videoUrl, width, height, frames, duration
           viewBox={`0 0 ${width} ${height}`}
           xmlns="http://www.w3.org/2000/svg"
         >
+          <ProximityLayer detections={currentFrame?.detections ?? []} pairs={currentFrame?.proximity ?? []} />
           <BoundingBoxLayer detections={currentFrame?.detections ?? []} imageHeight={height} animate={false} />
         </svg>
       </div>

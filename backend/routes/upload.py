@@ -6,6 +6,7 @@ import cv2
 from flask import Blueprint, jsonify, request
 
 from ml.detector import get_detector
+from ml.perimeter import compute_proximity_pairs
 from ml.tracker import IoUTracker
 
 upload_bp = Blueprint("upload", __name__)
@@ -65,7 +66,8 @@ def upload():
                 timestamp = frame_idx / fps
                 detections = detector.detect(frame)
                 tracked = tracker.update(detections)
-                frames.append({"timestamp": round(timestamp, 3), "detections": tracked})
+                proximity = compute_proximity_pairs(tracked)
+                frames.append({"timestamp": round(timestamp, 3), "detections": tracked, "proximity": proximity})
             frame_idx += 1
 
         cap.release()
